@@ -4,12 +4,13 @@ import 'package:guitardiary/data/services/sqlite_database_service.dart';
 
 void main() {
   final String testTable = 'GuitarDate';
+  final SqliteDatabaseService databaseService = SqliteDatabaseService();
 
   TestWidgetsFlutterBinding.ensureInitialized();
 
   group('SqliteDatabaseService', () {
     tearDownAll(() async {
-      SqliteDatabaseService.instance.reset();
+      databaseService.reset();
     });
 
     test('Insert and search items', () async {
@@ -20,10 +21,7 @@ void main() {
       ];
 
       // at the beginning database is empty
-      expect(
-          (await SqliteDatabaseService.instance
-                  .query(testTable, where, whereArgs))
-              .isEmpty,
+      expect((await databaseService.query(testTable, where, whereArgs)).isEmpty,
           true);
 
       // // insert one row
@@ -34,10 +32,10 @@ void main() {
         guitarDateTableKeysRepertoireTime: 10,
       };
 
-      await SqliteDatabaseService.instance.insert(testTable, row);
+      await databaseService.insert(testTable, row);
 
-      var inRangeResult = await SqliteDatabaseService.instance
-          .query(testTable, where, whereArgs);
+      var inRangeResult =
+          await databaseService.query(testTable, where, whereArgs);
 
       expect(inRangeResult.length, 1);
       expect(inRangeResult.first['id'], 1);
@@ -45,8 +43,7 @@ void main() {
       expect(inRangeResult.first['duration'], 20);
       expect(inRangeResult.first['repertoireTime'], 10);
 
-      var outOfRangeResult =
-          await SqliteDatabaseService.instance.query(testTable, where, [
+      var outOfRangeResult = await databaseService.query(testTable, where, [
         DateTime.parse('2012-01-03').millisecondsSinceEpoch,
         DateTime.parse('2020-12-31').millisecondsSinceEpoch
       ]);

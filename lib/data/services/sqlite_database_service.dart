@@ -14,12 +14,7 @@ abstract class DatabaseService {
 }
 
 class SqliteDatabaseService implements DatabaseService {
-  SqliteDatabaseService._privateConstructor();
-
-  static final SqliteDatabaseService instance =
-      SqliteDatabaseService._privateConstructor();
-
-  static Database _database;
+  Database _database;
 
   Future<Database> get database async {
     if (_database != null) {
@@ -33,7 +28,7 @@ class SqliteDatabaseService implements DatabaseService {
     return openDatabase(join(await getDatabasesPath(), 'guitar_date.db'),
         version: 1, onCreate: (Database db, int version) async {
       try {
-        await db.execute('CREATE TABLE GuitarDate ('
+        await db.execute('CREATE TABLE GuitarDatesTable ('
             '$guitarDateTableKeysId INTEGER PRIMARY KEY, '
             '$guitarDateTableKeysDate INTEGER, '
             '$guitarDateTableKeysDuration INTEGER, '
@@ -56,7 +51,7 @@ class SqliteDatabaseService implements DatabaseService {
   }
 
   Future<int> insert(String table, Map<String, dynamic> row) async {
-    Database db = await instance.database;
+    Database db = await database;
     return await db.insert(table, row);
   }
 
@@ -65,7 +60,7 @@ class SqliteDatabaseService implements DatabaseService {
     String where,
     List<dynamic> whereArgs,
   ) async {
-    Database db = await instance.database;
+    Database db = await database;
     return await db.query(
       table,
       where: where,

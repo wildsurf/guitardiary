@@ -1,9 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:guitardiary/blocs/guitar_dates/guitar_dates_bloc.dart';
 import 'package:guitardiary/data/models/guitar_date.dart';
 import 'package:guitardiary/data/models/skill.dart';
 import 'package:guitardiary/widgets/guitar_dates/calendar_bubble.dart';
+import 'package:guitardiary/widgets/guitar_dates/guitar_date_entry.dart';
 import 'package:table_calendar/table_calendar.dart';
 
 class GuitarDatesCalendar extends StatefulWidget {
@@ -13,16 +16,6 @@ class GuitarDatesCalendar extends StatefulWidget {
 
 class _GuitarDatesCalendarState extends State<GuitarDatesCalendar> {
   CalendarController _calendarController;
-
-  // dummy data
-  Map<DateTime, List> _events = {
-    DateTime.parse('2021-04-07'): [
-      GuitarDate(
-          date: DateTime.parse('2021-04-07'),
-          duration: 20,
-          skillTimes: {SkillType.repertoire: 20})
-    ],
-  };
 
   @override
   void initState() {
@@ -36,25 +29,43 @@ class _GuitarDatesCalendarState extends State<GuitarDatesCalendar> {
     super.dispose();
   }
 
-  void onTappedEmptyDate(DateTime day, List events, List holidays) {
-    var newGuitarDate = GuitarDate(date: day);
+  void _onTappedEmptyDate(DateTime day, List events, List holidays) {
     showModalBottomSheet(
         isScrollControlled: true,
         context: context,
         builder: (context) {
           return Container(
-            height: MediaQuery.of(context).size.height - 200,
-            child: Text(newGuitarDate.toString()),
-          );
+              height: MediaQuery.of(context).size.height - 200,
+              child: GuitarDateEntry(
+                date: day,
+              ));
         });
   }
 
-  @override
-  Widget build(BuildContext context) {
+  void _onDateRangeChanged(
+      DateTime first, DateTime last, CalendarFormat format) {
+    BlocProvider.of<GuitarDatesBloc>(context)
+        .add(GuitarDatesTimeRangeUpdates(from: first, to: last));
+  }
+
+  Map<DateTime, List<dynamic>> _transformGuitarDatesToCalendarEvents(
+      List<GuitarDate> guitarDates) {
+    Map<DateTime, List<dynamic>> events = {};
+    guitarDates.forEach((guitarDate) {
+      events[guitarDate.date] = [guitarDate];
+    });
+    return events;
+  }
+
+  Widget _buildCalendar(List<GuitarDate> guitarDates) {
+    Map<DateTime, List<dynamic>> events =
+        _transformGuitarDatesToCalendarEvents(guitarDates);
     return TableCalendar(
-      events: _events,
+      events: events,
       calendarController: _calendarController,
-      onDaySelected: onTappedEmptyDate,
+      onDaySelected: _onTappedEmptyDate,
+      onCalendarCreated: _onDateRangeChanged,
+      onVisibleDaysChanged: _onDateRangeChanged,
       builders: CalendarBuilders(
         todayDayBuilder: (context, DateTime date, _) {
           return CalendarBubble(
@@ -86,5 +97,17 @@ class _GuitarDatesCalendarState extends State<GuitarDatesCalendar> {
         },
       ),
     );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<GuitarDatesBloc, GuitarDatesState>(
+        builder: (context, state) {
+      if (state is GuitarDatesLoadSuccess) {
+        return _buildCalendar(state.guitarDates);
+      } else {
+        return _buildCalendar([]);
+      }
+    });
   }
 }
