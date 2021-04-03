@@ -12,7 +12,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Guitar ♥ Diary',
       theme: ThemeData(
-        primarySwatch: Colors.blueGrey,
+        primarySwatch: Colors.pink,
       ),
       onGenerateRoute: router.generateRoute,
       initialRoute: router.initialRoute,
