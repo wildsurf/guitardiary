@@ -1,13 +1,12 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:guitardiary/blocs/guitar_dates/guitar_dates_bloc.dart';
 import 'package:guitardiary/data/models/guitar_date.dart';
-import 'package:guitardiary/data/models/skill.dart';
 import 'package:guitardiary/widgets/guitar_dates/calendar_bubble.dart';
 import 'package:guitardiary/widgets/guitar_dates/guitar_date_entry.dart';
 import 'package:table_calendar/table_calendar.dart';
+
+import '../styled_bottom_sheet.dart';
 
 class GuitarDatesCalendar extends StatefulWidget {
   @override
@@ -31,14 +30,14 @@ class _GuitarDatesCalendarState extends State<GuitarDatesCalendar> {
 
   void _onTappedEmptyDate(DateTime day, List events, List holidays) {
     showModalBottomSheet(
+        backgroundColor: Colors.transparent,
         isScrollControlled: true,
         context: context,
         builder: (context) {
-          return Container(
-              height: MediaQuery.of(context).size.height - 200,
+          return StyledBottomSheet(
               child: GuitarDateEntry(
-                date: day,
-              ));
+            date: day,
+          ));
         });
   }
 
