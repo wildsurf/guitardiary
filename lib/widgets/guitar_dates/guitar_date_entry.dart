@@ -53,97 +53,99 @@ class _GuitarDateEntryState extends State<GuitarDateEntry> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
+    return SingleChildScrollView(
       child: Padding(
         padding: const EdgeInsets.all(8.0),
-        child: Column(
-          children: [
-            Text(
-              'Add a new guitar date',
-              style: TextStyle(
-                fontSize: 21.0,
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            children: [
+              Text(
+                'Add a new guitar date',
+                style: TextStyle(
+                  fontSize: 21.0,
+                ),
               ),
-            ),
-            SizedBox(
-              height: 40,
-            ),
-            Card(
-                margin: EdgeInsets.all(0.0),
-                color: Colors.white,
-                child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 15.0,
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              SizedBox(
+                height: 40,
+              ),
+              Card(
+                  margin: EdgeInsets.all(0.0),
+                  color: Colors.white,
+                  child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 15.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            Icons.calendar_today_rounded,
+                            size: 15.0,
+                          ),
+                          Text(
+                            '${widget.date.day.toString()}.${widget.date.month.toString()}.${widget.date.year.toString()}',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ))),
+              SizedBox(height: 10,),
+              Card(
+                  margin: EdgeInsets.all(0.0),
+                  color: Colors.white,
+                  child: Container(
+                      width: double.infinity,
+                      padding: const EdgeInsets.symmetric(
+                        vertical: 8.0,
+                        horizontal: 15.0,
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Icon(
+                            Icons.alarm,
+                            size: 18.0,
+                          ),
+                          Text(
+                            '${_duration.toInt().toString()} mins',
+                            textAlign: TextAlign.center,
+                          ),
+                        ],
+                      ))),
+              SizedBox(
+                height: 20,
+              ),
+              ..._skills.keys
+                  .map(
+                    (e) => Column(
                       children: [
-                        Icon(
-                          Icons.calendar_today_rounded,
-                          size: 15.0,
-                        ),
-                        Text(
-                          '${widget.date.day.toString()}.${widget.date.month.toString()}.${widget.date.year.toString()}',
-                          textAlign: TextAlign.center,
-                        ),
+                        SkillSliderCard(
+                            currentSliderValue: _skills[e],
+                            onChanged: (double newValue) {
+                              setState(() {
+                                _skills[e] = newValue;
+                              });
+                              _updateDuration();
+                            },
+                            label: e.toString()),
+                        SizedBox(
+                          height: 5,
+                        )
                       ],
-                    ))),
-            SizedBox(height: 10,),
-            Card(
-                margin: EdgeInsets.all(0.0),
-                color: Colors.white,
-                child: Container(
-                    width: double.infinity,
-                    padding: const EdgeInsets.symmetric(
-                      vertical: 8.0,
-                      horizontal: 15.0,
                     ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Icon(
-                          Icons.alarm,
-                          size: 18.0,
-                        ),
-                        Text(
-                          '${_duration.toInt().toString()} mins',
-                          textAlign: TextAlign.center,
-                        ),
-                      ],
-                    ))),
-            SizedBox(
-              height: 20,
-            ),
-            ..._skills.keys
-                .map(
-                  (e) => Column(
-                    children: [
-                      SkillSliderCard(
-                          currentSliderValue: _skills[e],
-                          onChanged: (double newValue) {
-                            setState(() {
-                              _skills[e] = newValue;
-                            });
-                            _updateDuration();
-                          },
-                          label: e.toString()),
-                      SizedBox(
-                        height: 5,
-                      )
-                    ],
-                  ),
-                )
-                .toList(),
-            SizedBox(
-              height: 20,
-            ),
-            ElevatedButton(
-              onPressed: _onPressed,
-              child: Text('Add Guitar Date'),
-            )
-          ],
+                  )
+                  .toList(),
+              SizedBox(
+                height: 20,
+              ),
+              ElevatedButton(
+                onPressed: _onPressed,
+                child: Text('Add Guitar Date'),
+              )
+            ],
+          ),
         ),
       ),
     );
